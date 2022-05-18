@@ -54,7 +54,7 @@
         <textarea id="description" name="description" bind:value></textarea>
         <br/>
         {#if canClassify}
-            <input type="submit" value="Pounder">
+            <input type="submit" value="Ponder">
         {:else}
             <p>classifying in progress</p>
         {/if}
