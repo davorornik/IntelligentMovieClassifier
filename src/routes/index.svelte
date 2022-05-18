@@ -1,20 +1,22 @@
 <script type="ts">
+    import {ConfettiExplosion} from 'svelte-confetti-explosion'
+
+    let canClassify = true;
+    let isVisible = false;
     let value = "The adventures of a female reporter in the 1890s";
     let result = "";
 
-    // todo form handling
     async function onSubmit(e) {
+        canClassify = false;
+        isVisible = false;
         const formData = new FormData(e.target);
-
         const data = {};
+
         for (let field of formData) {
             const [key, value] = field;
             data[key] = value;
 
         }
-
-
-        console.log(data)
 
         const res = await fetch('/evaluate', {
             method: 'POST',
@@ -24,10 +26,10 @@
             },
             body: JSON.stringify(data)
         })
-
-
-        const json = await res.json()
-        result = JSON.stringify(json)
+        const json = await res.json();
+        result = JSON.stringify(json);
+        isVisible = true;
+        canClassify = true;
     }
 
 </script>
@@ -41,17 +43,31 @@
     <form on:submit|preventDefault={onSubmit}>
         <p><label for="method">Machine learning method:</label></p>
         <select id="method" name="method">
-            <option value="1">Linear Regresion</option>
-            <option value="2" selected>Convolutional Neural Network</option>
+            <option value="1" selected>Decision tree</option>
+            <option value="2">K Neighbors</option>
+            <option value="3">Logistic regression </option>
+            <option value="4">Perceptron</option>
+            <option value="5">Convolutional Neural Network</option>
         </select>
 
         <p><label for="description">Enter your movie description:</label></p>
-        <textarea id="description" name="description" rows="4" cols="50" bind:value></textarea>
+        <textarea id="description" name="description" bind:value></textarea>
         <br/>
-        <input type="submit" value="Pounder">
+        {#if canClassify}
+            <input type="submit" value="Pounder">
+        {:else}
+            <p>classifying in progress</p>
+        {/if}
     </form>
 
-    <p>{result}</p>
+
+    {#if isVisible}
+        <p>{result}</p>
+        <div>
+            <ConfettiExplosion/>
+        </div>
+    {/if}
+
 
 </div>
 
@@ -63,8 +79,9 @@
     }
 
     #description {
-        min-width: 360px;
-        width: 100%;
+        min-height: 400px;
+        min-width: 400px;
+        width: 400px;
     }
 
     .center {
@@ -80,6 +97,10 @@
 
     hgroup {
         margin: 10pt;
+    }
+
+    :global(body) {
+        overflow: hidden;
     }
 
 
